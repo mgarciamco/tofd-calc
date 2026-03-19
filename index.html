@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a0f1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TOFD Calc">
+<title>Calculette TOFD</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --card: #1a2235;
+    --border: #1e3a5f;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #7fff6b;
+    --text: #e2eaf5;
+    --muted: #6b8aad;
+    --danger: #ff4757;
+    --mono: 'Share Tech Mono', monospace;
+    --sans: 'Exo 2', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 16px 40px;
+  }
+
+  /* Header */
+  header {
+    padding: 28px 0 20px;
+    text-align: center;
+  }
+
+  .logo-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  h1 {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 1.6rem;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .subtitle {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    margin: 16px 0;
+    opacity: 0.4;
+  }
+
+  /* Section title */
+  .section-title {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Input card */
+  .input-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 30px rgba(0,212,255,0.04);
+  }
+
+  .field {
+    margin-bottom: 14px;
+  }
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .field label .unit {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    padding: 2px 7px;
+    border-radius: 4px;
+    border: 1px solid rgba(0,212,255,0.2);
+  }
+
+  .input-wrapper {
+    position: relative;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  input[type="number"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.12);
+  }
+
+  /* Range slider */
+  .range-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--border);
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0,212,255,0.5);
+  }
+
+  /* Calculate button */
+  .btn-calc {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #0066cc, #00d4ff);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(0,212,255,0.25);
+  }
+  .btn-calc:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 10px rgba(0,212,255,0.15);
+  }
+
+  /* Results */
+  .results-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    animation: fadeIn 0.4s ease both;
+  }
+  .result-item:last-child { border-bottom: none; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .result-value {
+    font-family: var(--mono);
+    font-size: 1.15rem;
+    font-weight: 400;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .result-value .num { color: var(--accent3); }
+  .result-value.pcs .num { color: var(--accent); }
+  .result-value.lateral .num { color: var(--accent2); }
+
+  .result-unit {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* Diagram */
+  .diagram-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .diagram-svg {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Formula info */
+  .formula-card {
+    background: rgba(0,212,255,0.04);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 10px;
+    padding: 16px;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.9;
+  }
+
+  .formula-card .formula-title {
+    color: var(--accent);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .formula-card span { color: var(--text); }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--muted);
+    opacity: 0.5;
+    letter-spacing: 0.15em;
+    margin-top: 10px;
+  }
+
+  /* Pulse animation on result update */
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0,212,255,0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(0,212,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,212,255,0); }
+  }
+  .pulse { animation: pulse 0.5s ease; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo-line">
+      <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="18" stroke="#00d4ff" stroke-width="1.5" opacity="0.3"/>
+        <circle cx="20" cy="20" r="12" stroke="#00d4ff" stroke-width="1.5" opacity="0.5"/>
+        <circle cx="20" cy="20" r="5" fill="#00d4ff"/>
+        <line x1="2" y1="20" x2="10" y2="20" stroke="#00d4ff" stroke-width="1.5"/>
+        <line x1="30" y1="20" x2="38" y2="20" stroke="#00d4ff" stroke-width="1.5"/>
+        <line x1="20" y1="2" x2="20" y2="10" stroke="#00d4ff" stroke-width="1.5"/>
+        <line x1="20" y1="30" x2="20" y2="38" stroke="#00d4ff" stroke-width="1.5"/>
+      </svg>
+      <h1>TOFD</h1>
+    </div>
+    <div class="subtitle">Time of Flight Diffraction · Calculette CND</div>
+  </header>
+
+  <div class="divider"></div>
+
+  <!-- INPUTS -->
+  <div class="section-title">Paramètres</div>
+
+  <div class="input-card">
+    <div class="field">
+      <label>Épaisseur <span class="unit">mm</span></label>
+      <input type="number" id="epaisseur" value="14" step="0.1" min="0.1" oninput="syncRange('epaisseur',1,100)">
+      <div class="range-row">
+        <input type="range" id="epaisseur_r" min="1" max="100" step="0.5" value="14" oninput="syncInput('epaisseur',1,100)">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Angle <span class="unit">°</span></label>
+      <input type="number" id="angle" value="70" step="0.5" min="30" max="85" oninput="syncRange('angle',30,85)">
+      <div class="range-row">
+        <input type="range" id="angle_r" min="30" max="85" step="0.5" value="70" oninput="syncInput('angle',30,85)">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Croisement <span class="unit">mm</span></label>
+      <input type="number" id="croisement" value="10" step="0.5" min="0" oninput="syncRange('croisement',0,80)">
+      <div class="range-row">
+        <input type="range" id="croisement_r" min="0" max="80" step="0.5" value="10" oninput="syncInput('croisement',0,80)">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Vitesse <span class="unit">km/s</span></label>
+      <input type="number" id="vitesse" value="5.9" step="0.01" min="1" max="10" oninput="syncRange('vitesse',1,10)">
+      <div class="range-row">
+        <input type="range" id="vitesse_r" min="1" max="10" step="0.05" value="5.9" oninput="syncInput('vitesse',1,10)">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Retard <span class="unit">µs</span></label>
+      <input type="number" id="retard" value="5.83" step="0.01" min="0" oninput="syncRange('retard',0,20)">
+      <div class="range-row">
+        <input type="range" id="retard_r" min="0" max="20" step="0.05" value="5.83" oninput="syncInput('retard',0,20)">
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-calc" onclick="calculate()">⚡ Calculer</button>
+
+  <!-- RESULTS -->
+  <div class="section-title">Résultats</div>
+
+  <div class="results-card" id="resultsCard">
+    <div class="result-item" style="animation-delay:0.05s">
+      <div class="result-label">PCS</div>
+      <div class="result-value pcs">
+        <span class="num" id="res-pcs">—</span>
+        <span class="result-unit">mm</span>
+      </div>
+    </div>
+    <div class="result-item" style="animation-delay:0.1s">
+      <div class="result-label">Onde latérale</div>
+      <div class="result-value lateral">
+        <span class="num" id="res-lateral">—</span>
+        <span class="result-unit">µs</span>
+      </div>
+    </div>
+    <div class="result-item" style="animation-delay:0.15s">
+      <div class="result-label">Écho de fond</div>
+      <div class="result-value">
+        <span class="num" id="res-fond">—</span>
+        <span class="result-unit">µs</span>
+      </div>
+    </div>
+    <div class="result-item" style="animation-delay:0.2s">
+      <div class="result-label">Angle (rad)</div>
+      <div class="result-value">
+        <span class="num" id="res-angle-rad">—</span>
+        <span class="result-unit">rad</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIAGRAM -->
+  <div class="section-title">Schéma</div>
+  <div class="diagram-card">
+    <svg class="diagram-svg" id="diagramSvg" viewBox="0 0 380 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Material -->
+      <rect x="20" y="40" width="340" height="130" rx="4" fill="#0d1b2e" stroke="#1e3a5f" stroke-width="1.5"/>
+      <text x="30" y="58" fill="#6b8aad" font-family="'Share Tech Mono',monospace" font-size="10">MATÉRIAU</text>
+
+      <!-- Top surface -->
+      <line x1="20" y1="40" x2="360" y2="40" stroke="#00d4ff" stroke-width="2"/>
+      <!-- Bottom surface -->
+      <line x1="20" y1="170" x2="360" y2="170" stroke="#6b8aad" stroke-width="1.5" stroke-dasharray="6,3"/>
+
+      <!-- Probes -->
+      <rect x="100" y="20" width="30" height="20" rx="3" fill="#1a4a7a" stroke="#00d4ff" stroke-width="1.5"/>
+      <text x="115" y="34" fill="#00d4ff" font-family="'Share Tech Mono',monospace" font-size="9" text-anchor="middle">E</text>
+      <rect x="250" y="20" width="30" height="20" rx="3" fill="#1a4a7a" stroke="#00d4ff" stroke-width="1.5"/>
+      <text x="265" y="34" fill="#00d4ff" font-family="'Share Tech Mono',monospace" font-size="9" text-anchor="middle">R</text>
+
+      <!-- Beam paths -->
+      <!-- Lateral wave -->
+      <line x1="115" y1="40" x2="265" y2="40" stroke="#ff6b35" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.8"/>
+
+      <!-- Diffracted paths -->
+      <line id="beam-e" x1="115" y1="40" x2="190" y2="150" stroke="#00d4ff" stroke-width="1.5" opacity="0.7"/>
+      <line id="beam-r" x1="265" y1="40" x2="190" y2="150" stroke="#00d4ff" stroke-width="1.5" opacity="0.7"/>
+
+      <!-- Crack tip -->
+      <circle id="crack-tip" cx="190" cy="150" r="5" fill="#7fff6b" stroke="#0a0f1e" stroke-width="1.5"/>
+
+      <!-- Labels -->
+      <text x="190" y="95" fill="#ff6b35" font-family="'Share Tech Mono',monospace" font-size="9" text-anchor="middle" opacity="0.9">onde latérale</text>
+
+      <!-- PCS label -->
+      <line x1="130" y1="33" x2="250" y2="33" stroke="#00d4ff" stroke-width="0.8" opacity="0.4"/>
+      <text id="pcs-label" x="190" y="28" fill="#00d4ff" font-family="'Share Tech Mono',monospace" font-size="9" text-anchor="middle">PCS: —</text>
+
+      <!-- Depth label -->
+      <line x1="345" y1="40" x2="345" y2="170" stroke="#6b8aad" stroke-width="0.8" opacity="0.4"/>
+      <text id="depth-label" x="370" y="110" fill="#6b8aad" font-family="'Share Tech Mono',monospace" font-size="9" text-anchor="middle" transform="rotate(90,370,110)">e: — mm</text>
+    </svg>
+  </div>
+
+  <!-- FORMULAS -->
+  <div class="section-title">Formules</div>
+  <div class="formula-card">
+    <div class="formula-title">// Références de calcul TOFD</div>
+    <div>PCS = <span>2 × e × tan(α)</span></div>
+    <div>Onde latérale = <span>retard + PCS / (V × 1000)</span></div>
+    <div>Écho de fond = <span>retard + 2 × e / (V × cos(α) × 1000)</span></div>
+    <div style="margin-top:8px;opacity:0.6">V en km/s · e en mm · α en ° · t en µs</div>
+  </div>
+
+  <footer>TOFD CALC v1.0 · CND ULTRASONORE · © 2026</footer>
+
+</div>
+
+<script>
+  function syncRange(id, min, max) {
+    const val = parseFloat(document.getElementById(id).value);
+    document.getElementById(id + '_r').value = val;
+    calculate();
+  }
+
+  function syncInput(id, min, max) {
+    const val = parseFloat(document.getElementById(id + '_r').value);
+    document.getElementById(id).value = val;
+    calculate();
+  }
+
+  function calculate() {
+    const e = parseFloat(document.getElementById('epaisseur').value) || 0;
+    const angleDeg = parseFloat(document.getElementById('angle').value) || 0;
+    const croisement = parseFloat(document.getElementById('croisement').value) || 0;
+    const V = parseFloat(document.getElementById('vitesse').value) || 1;
+    const retard = parseFloat(document.getElementById('retard').value) || 0;
+
+    const angleRad = angleDeg * Math.PI / 180;
+
+    // PCS (Probe Center Separation)
+    const PCS = 2 * e * Math.tan(angleRad) + croisement;
+
+    // Onde latérale (µs)
+    const lateral = retard + PCS / (V * 1000);
+
+    // Écho de fond (µs)
+    const fond = retard + 2 * e / (V * Math.cos(angleRad) * 1000);
+
+    // Update results
+    document.getElementById('res-pcs').textContent = PCS.toFixed(3);
+    document.getElementById('res-lateral').textContent = lateral.toFixed(6);
+    document.getElementById('res-fond').textContent = fond.toFixed(6);
+    document.getElementById('res-angle-rad').textContent = angleRad.toFixed(6);
+
+    // Update diagram labels
+    document.getElementById('pcs-label').textContent = 'PCS: ' + PCS.toFixed(1) + ' mm';
+    document.getElementById('depth-label').textContent = 'e: ' + e.toFixed(0) + ' mm';
+
+    // Update beam angle in SVG
+    const cx = 190, top = 40, bottom = 170;
+    const h = bottom - top;
+    const halfPCS = PCS * 1.2; // scale for display
+    const ex = Math.max(80, Math.min(160, 190 - halfPCS));
+    const rx = Math.max(220, Math.min(310, 190 + halfPCS));
+    document.getElementById('beam-e').setAttribute('x1', ex);
+    document.getElementById('beam-r').setAttribute('x1', rx);
+
+    // Pulse animation
+    const card = document.getElementById('resultsCard');
+    card.classList.remove('pulse');
+    void card.offsetWidth;
+    card.classList.add('pulse');
+  }
+
+  // Initial calculation on load
+  calculate();
+</script>
+</body>
+</html>
